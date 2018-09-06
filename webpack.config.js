@@ -2,11 +2,11 @@ const path = require('path');
 
 module.exports = {
   entry: {
-    app: './src/index.js'
+    app: './src/Contact.js'
   },
   output: {
     path: path.join(__dirname, 'lib'),
-    filename: 'ContactForm.js',
+    filename: 'Contact.js',
     libraryTarget: 'commonjs2'
   },
   module: {
