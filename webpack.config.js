@@ -1,9 +1,10 @@
 const path = require('path');
 
 module.exports = {
-  entry: {
-    app: './src/Contact.js'
-  },
+  entry: [
+    '@babel/polyfill',
+    './src/Contact.js'
+  ],
   output: {
     path: path.join(__dirname, 'lib'),
     filename: 'Contact.js',

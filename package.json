@@ -9,6 +9,7 @@
   "author": "Brad Reed <brad@bradreed.co.uk>",
   "license": "ISC",
   "dependencies": {
+    "@babel/polyfill": "^7.0.0",
     "formik": "^1.2.0",
     "prop-types": "^15.6.2",
     "react": "^16.4.2"

@@ -1,9 +1,9 @@
-import React from 'react';
-import {withFormik} from 'formik';
+import React from 'react'
+import {withFormik} from 'formik'
 
-async function sendEmail(mailEndpoint, values) {
-  const data = new URLSearchParams();
-  Object.entries(values).forEach(p => data.append(...p));
+async function sendEmail (mailEndpoint, values) {
+  const data = new URLSearchParams()
+  Object.entries(values).forEach(p => data.append(...p))
 
   try {
     const response = await fetch(mailEndpoint, {
@@ -13,36 +13,35 @@ async function sendEmail(mailEndpoint, values) {
         'Accept': 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
       }
-    });
+    })
 
-    if (response.ok) return response;
+    if (response.ok) return response
 
-    const body = await response.json();
+    const body = await response.json()
 
     if (response.status === 400) {
       throw {
-        kind : 'validationError',
+        kind: 'validationError',
         errors: body.errors,
         context: response
-      };
+      }
     }
 
     throw {
-      kind : 'apiError',
+      kind: 'apiError',
       context: {
         response,
         body
       }
-    };
+    }
   } catch (error) {
-    console.log(error);
-    if (error.kind)
-      throw error;
+    console.log(error)
+    if (error.kind) { throw error }
 
     throw {
       type: 'apiError',
       error
-    };
+    }
   }
 }
 
@@ -51,13 +50,13 @@ const InputField = ({
   error,
   el: Element = 'input',
   ...props
-}) => <div className="form-group">
-  <Element key="input" name={name} placeholder={name.toUpperCase()} type={props.type || Element == 'input'
-      ? 'text'
-      : null} className="contact__field" {...props}/>
+}) => <div className={`form-group form-group--${Element}`}>
+  <Element key='input' name={name} placeholder={name.toUpperCase()} type={props.type || Element == 'input'
+    ? 'text'
+    : null} className='contact__field' {...props} />
 
-  { error && <span key="error" className="fieldError">{error}</span> }
-</div>;
+  { error && <span key='error' className='fieldError'>{error}</span> }
+</div>
 
 const Form = ({
   mailEndpoint,
@@ -67,36 +66,34 @@ const Form = ({
   handleChange,
   handleBlur,
   isSubmitting
-}) => {
-  return <form onSubmit={handleSubmit(mailEndpoint)}>
-    <InputField name="name" onChange={handleChange} onBlur={handleBlur} value={values.name} error={errors.name} />
+}) => <form onSubmit={handleSubmit}>
+  <InputField name='name' onChange={handleChange} onBlur={handleBlur} value={values.name} error={errors.name} />
 
-    <InputField name="email" type="email" onChange={handleChange} onBlur={handleBlur} value={values.email} error={errors.email} />
+  <InputField name='email' type='email' onChange={handleChange} onBlur={handleBlur} value={values.email} error={errors.email} />
 
-    <InputField name="message" el="textarea" rows="10" onChange={handleChange} onBlur={handleBlur} value={values.message} error={errors.message} />
+  <InputField name='message' el='textarea' rows='10' onChange={handleChange} onBlur={handleBlur} value={values.message} error={errors.message} />
 
-    <div className="form-group text-right">
-      <button type="submit" className="contact__button" disabled={isSubmitting}>Send</button>
-    </div>
-  </form>;
-}
+  <div className='form-group form-group--button text-right'>
+    <button type='submit' disabled={isSubmitting}>Send</button>
+  </div>
+</form>
 
 export default withFormik({
   mapPropsToValues: props => ({ name: '', email: '', message: '' }),
-  handleSubmit: (values, { props, setSubmitting, setErrors }) => endpoint => {
-    sendEmail(endpoint, values).then(() => {
-      props.setError(null);
-      props.setSuccess(true);
+  handleSubmit: (values, { props, setSubmitting, setErrors }) => {
+    sendEmail(props.endpoint, values).then(() => {
+      props.setError(null)
+      props.setSuccess(true)
     }).catch((error) => {
-      setSubmitting(false);
-      props.setSuccess(false);
+      setSubmitting(false)
+      props.setSuccess(false)
 
-      if (error.kind == 'validationError' && error.errors) {
-        setErrors(error.errors);
-        props.setError(null);
+      if (error.kind === 'validationError' && error.errors) {
+        setErrors(error.errors)
+        props.setError(null)
       } else {
-        props.setError(error);
+        props.setError(error)
       }
-    });
+    })
   }
-})(Form);
+})(Form)
