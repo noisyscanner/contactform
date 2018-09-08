@@ -32,7 +32,6 @@ export default async function sendEmail (mailEndpoint, values) {
       }
     }
   } catch (error) {
-    console.log(error)
     if (error.kind) { throw error }
 
     throw {
