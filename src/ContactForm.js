@@ -1,49 +1,6 @@
 import React from 'react'
 import {withFormik} from 'formik'
-
-async function sendEmail (mailEndpoint, values) {
-  const data = new URLSearchParams()
-  Object.entries(values).forEach(p => data.append(...p))
-
-  try {
-    const response = await fetch(mailEndpoint, {
-      method: 'post',
-      body: data,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-      }
-    })
-
-    if (response.ok) return response
-
-    const body = await response.json()
-
-    if (response.status === 400) {
-      throw {
-        kind: 'validationError',
-        errors: body.errors,
-        context: response
-      }
-    }
-
-    throw {
-      kind: 'apiError',
-      context: {
-        response,
-        body
-      }
-    }
-  } catch (error) {
-    console.log(error)
-    if (error.kind) { throw error }
-
-    throw {
-      type: 'apiError',
-      error
-    }
-  }
-}
+import sendEmail from './sendmail'
 
 const InputField = ({
   name,
@@ -51,7 +8,7 @@ const InputField = ({
   el: Element = 'input',
   ...props
 }) => <div className={`form-group form-group--${Element}`}>
-  <Element key='input' name={name} placeholder={name.toUpperCase()} type={props.type || Element == 'input'
+  <Element key='input' name={name} placeholder={name.toUpperCase()} type={props.type || Element === 'input'
     ? 'text'
     : null} className='contact__field' {...props} />
 
@@ -59,7 +16,6 @@ const InputField = ({
 </div>
 
 const Form = ({
-  mailEndpoint,
   values,
   errors,
   handleSubmit,
