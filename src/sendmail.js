@@ -1,3 +1,6 @@
+import { ValidationError, ApiError } from './errors'
+import { fetch } from 'whatwg-fetch'
+
 export default async function sendEmail (mailEndpoint, values) {
   const data = new URLSearchParams()
   Object.entries(values).forEach(p => data.append(...p))
@@ -17,26 +20,13 @@ export default async function sendEmail (mailEndpoint, values) {
     const body = await response.json()
 
     if (response.status === 400) {
-      throw {
-        kind: 'validationError',
-        errors: body.errors,
-        context: response
-      }
+      throw new ValidationError(body.errors)
     }
 
-    throw {
-      kind: 'apiError',
-      context: {
-        response,
-        body
-      }
-    }
+    throw new ApiError(body)
   } catch (error) {
     if (error.kind) { throw error }
 
-    throw {
-      type: 'apiError',
-      error
-    }
+    throw new ApiError(error)
   }
 }

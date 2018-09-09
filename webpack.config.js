@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('path')
 
 module.exports = {
   mode: 'development',
@@ -12,11 +12,25 @@ module.exports = {
     libraryTarget: 'commonjs2'
   },
   module: {
-    rules: [{
+    rules: [
+      {
         test: /\.js$/,
         exclude: /(node_modules)/,
         loader: 'babel-loader'
+      },
+      {
+        test: /\.scss$/,
+        use: [{
+          loader: 'style-loader'
+        }, {
+          loader: 'css-loader',
+          options: {
+            modules: true
+          }
+        }, {
+          loader: 'sass-loader'
+        }]
       }
     ]
   }
-};
+}

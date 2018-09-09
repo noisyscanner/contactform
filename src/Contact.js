@@ -1,36 +1,41 @@
 import React from 'react'
-import ContactForm from './ContactForm'
 import PropTypes from 'prop-types'
+import ContactForm from './ContactForm'
+import ThemeContext from './ThemeContext'
+
+const ThemeShape = PropTypes.shape({
+  loaderClass: PropTypes.string
+})
 
 export default class Contact extends React.Component {
   static propTypes = {
-    endpoint: PropTypes.string.isRequired
+    endpoint: PropTypes.string.isRequired,
+    theme: ThemeShape
   }
 
-  constructor (props) {
-    super(props)
-    this.state = {
-      error: null,
-      success: false
+  static defaultProps = {
+    theme: {
+      loaderClass: ''
     }
   }
 
+  state = {
+    error: null,
+    success: false
+  }
+
   setSuccess (success) {
-    this.setState({
-      success: !!success
-    })
+    this.setState({ success: !!success })
   }
 
   setError (error) {
-    this.setState({
-      error
-    })
+    this.setState({ error })
   }
 
   render () {
     const { success, error } = this.state
-    const { endpoint } = this.props
-    return <div>
+    const { endpoint, theme } = this.props
+    return <ThemeContext.Provider value={theme}>
       {
         error &&
         <p className='contact__error'>
@@ -43,6 +48,6 @@ export default class Contact extends React.Component {
           ? <p className='contact__success'>Thanks for getting in touch. We aim to get back to you within 1 working day.</p>
           : <ContactForm endpoint={endpoint} setSuccess={this.setSuccess.bind(this)} setError={this.setError.bind(this)} />
       }
-    </div>
+    </ThemeContext.Provider>
   }
 }

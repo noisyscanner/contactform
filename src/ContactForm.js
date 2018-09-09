@@ -1,6 +1,8 @@
 import React from 'react'
-import {withFormik} from 'formik'
+import { withFormik } from 'formik'
 import sendEmail from './sendmail'
+import Loader from './Loader'
+import { ValidationError } from './errors'
 
 const InputField = ({
   name,
@@ -14,6 +16,20 @@ const InputField = ({
 
   { error && <span key='error' className='fieldError'>{error}</span> }
 </div>
+
+const SubmitButton = ({
+  isSubmitting,
+  children
+}) =>
+  <div className='form-group form-group--button'>
+    <button type='submit' disabled={isSubmitting}>
+      {
+        isSubmitting
+          ? <Loader />
+          : children
+      }
+    </button>
+  </div>
 
 const Form = ({
   values,
@@ -29,22 +45,20 @@ const Form = ({
 
   <InputField name='message' el='textarea' rows='10' onChange={handleChange} onBlur={handleBlur} value={values.message} error={errors.message} />
 
-  <div className='form-group form-group--button text-right'>
-    <button type='submit' disabled={isSubmitting}>Send</button>
-  </div>
+  <SubmitButton isSubmitting={isSubmitting}>Send</SubmitButton>
 </form>
 
 export default withFormik({
-  mapPropsToValues: props => ({ name: '', email: '', message: '' }),
+  mapPropsToValues: () => ({ name: '', email: '', message: '' }),
   handleSubmit: (values, { props, setSubmitting, setErrors }) => {
     sendEmail(props.endpoint, values).then(() => {
       props.setError(null)
       props.setSuccess(true)
-    }).catch((error) => {
+    }).catch(error => {
       setSubmitting(false)
       props.setSuccess(false)
 
-      if (error.kind === 'validationError' && error.errors) {
+      if (error instanceof ValidationError) {
         setErrors(error.errors)
         props.setError(null)
       } else {
